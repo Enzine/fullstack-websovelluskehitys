@@ -18,7 +18,7 @@ class App extends React.Component {
 
   vote = () => {
     let lol = this.state.votes
-    lol[this.state.selected]++;
+    lol[this.state.selected]++
     this.setState({ votes: lol })
   }
 
