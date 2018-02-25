@@ -111,7 +111,7 @@ class App extends React.Component {
           newName: '',
           newNumber: ''
         })
-        this.notify(`${person.name} added`)
+        this.notify(`${person.name} added with number ${person.number}\n`)
       })
   }
 

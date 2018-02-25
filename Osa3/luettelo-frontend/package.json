@@ -1,7 +1,6 @@
 {
   "name": "luettelo-frontend",
   "version": "0.1.0",
-  "Access-Control-Allow-Credentials": true,
   "private": true,
   "dependencies": {
     "axios": "^0.17.1",
@@ -14,5 +13,6 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
-  }
+  },
+  "proxy": "http://localhost:3001"
 }
