@@ -48,8 +48,8 @@ blogsRouter.delete('/:id', (request, response) => {
 blogsRouter.post('/', (request, response) => {
   const body = request.body
 
-  if (body.title === undefined) {
-    response.status(400).json({ error: 'content missing' })
+  if (body.title === undefined || body.url === undefined) {
+    response.status(400).json({ error: 'title or url missing' })
   }
 
   const blog = new Blog({

@@ -81,7 +81,7 @@ test('a valid blog can be added ', async () => {
   expect(titles).toContain('totoro')
 })
 
-test('if no likes are given, sets likes to 0 ', async () => {
+test('if no likes given, sets likes to 0 ', async () => {
   const newBlog = {
     title: "test",
     author: "test",
@@ -97,8 +97,24 @@ test('if no likes are given, sets likes to 0 ', async () => {
   const response = await api
     .get('/api/blogs')
 
-  //expect(response.body.length).toBe(initialBlogs.length + 1)
   expect(response.body[response.body.length-1].likes).toBe(0)
+})
+
+test('if no title or url given, returns status code 400 ', async () => {
+  const newBlog = {
+    author: "test",
+    likes: 5
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(400)
+
+  const response = await api
+    .get('/api/blogs')
+
+  expect(response.body.length).toBe(initialBlogs.length)
 })
 
 afterAll(() => {
