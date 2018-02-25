@@ -33,18 +33,6 @@ blogsRouter.get('/:id', (request, response) => {
     })
 })
 
-blogsRouter.delete('/:id', (request, response) => {
-  Blog
-    .findByIdAndRemove(request.params.id)
-    .then(result => {
-      console.log(result)
-      response.status(204).end()
-    })
-    .catch(error => {
-      response.status(400).send({ error: 'malformatted id' })
-    })
-})
-
 blogsRouter.post('/', (request, response) => {
   const body = request.body
 
@@ -67,7 +55,39 @@ blogsRouter.post('/', (request, response) => {
     .then(formattedBlog => {
       response.json(formattedBlog)
     })
+})
 
+blogsRouter.delete('/:id', (request, response) => {
+  Blog
+    .findByIdAndRemove(request.params.id)
+    .then(result => {
+      console.log(result)
+      response.status(204).end()
+    })
+    .catch(error => {
+      response.status(400).send({ error: 'malformatted id' })
+    })
+})
+
+blogsRouter.put('/:id', (request, response) => {
+  const body = request.body
+
+  const blog = {
+    title: body.title,
+    author: body.author,
+    url: body.url,
+    likes: body.likes
+  }
+
+  Blog
+    .findByIdAndUpdate(request.params.id, blog, { new: true })
+    .then(updatedBlog => {
+      response.json(formatBlog(updatedBlog))
+    })
+    .catch(error => {
+      console.log(error)
+      response.status(400).send({ error: 'malformatted id' })
+    })
 })
 
 module.exports = blogsRouter
