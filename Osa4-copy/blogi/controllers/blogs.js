@@ -11,6 +11,11 @@ blogRouter.get('/', async (request, response) => {
   response.json(blogs)
 })
 
+blogRouter.get('/:id', async (request, response) => {
+  const blog = await Blog.findById(request.params.id)
+  response.json(blog)
+})
+
 blogRouter.post('/', async (request, response) => {
   const { title, author, url, likes } = request.body
 
@@ -59,8 +64,12 @@ blogRouter.delete('/:id', async (request, response) => {
     
     console.log(blog.user, decodedToken.id)
 
-    if (decodedToken.id.toString() !== blog.user.toString()) {
-      return response.status(400).json({ error: 'only creator can delete a blog' })
+    if (blog.user) {
+      if (decodedToken.id.toString() !== blog.user.toString()) {
+        return response.status(400).json({ error: 'only creator can delete a blog' })
+      }
+    } else {
+      return response.status(200).json({ message: 'blog deleted' })
     }
 
     if (blog) {

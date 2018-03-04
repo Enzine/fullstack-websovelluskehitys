@@ -77,6 +77,31 @@ class App extends React.Component {
     }, 5000)
   }
 
+  like = (id) => {
+    return async () => {
+      const oldBlog = this.state.blogs.find(b => b._id === id) 
+      const newBlog = {
+        title: oldBlog.title, 
+        author: oldBlog.author, 
+        url: oldBlog.url, 
+        likes: oldBlog.likes + 1, 
+        user: oldBlog.user 
+      }
+      try {
+        await blogService.update(id, newBlog)
+        this.setState({ message: 'Tykkäsit juuri blogista!' })
+        setTimeout(() => {
+          this.setState({ message: null })
+        }, 5000)
+      } catch (exception) {
+        this.setState({ error: 'Blogin tykkääminen ei nyt onnistunut' })
+        setTimeout(() => {
+          this.setState({ error: null })
+        }, 5000)
+      }
+    }
+  }
+
   addBlog = async (event) => {
     event.preventDefault()
     try {
@@ -107,13 +132,43 @@ class App extends React.Component {
     }
   }
 
+  deleteBlog = (id) => {
+    return async () => {
+      const blogToRemove = this.state.blogs.find(b => b._id === id)
+      if (!window.confirm(`Poistetaanko blogi ${blogToRemove.title}?`)) return
+      try {
+        await blogService.erase(id)
+        this.setState({
+          message: `Poistettiin '${blogToRemove.title}'`,
+          blogs: this.state.blogs.filter(e => !e.title.includes(blogToRemove.title))
+        })
+        setTimeout(() => {
+          this.setState({ message: null })
+        }, 3000)
+      } catch (exception) {
+        this.setState({ error: 'Ongelmia blogin poistamisessa' })
+        setTimeout(() => {
+          this.setState({ error: null })
+        }, 3000)
+      }
+    }
+  }
+
   handleFieldChange = (event) => {
     this.setState({ [event.target.name]: event.target.value })
   }  
 
   render() {
-      const hideWhenVisible = { display: this.state.loginVisible ? 'none' : '' }
-      const showWhenVisible = { display: this.state.loginVisible ? '' : 'none' }
+    const hideWhenVisible = { display: this.state.loginVisible ? 'none' : '' }
+    const showWhenVisible = { display: this.state.loginVisible ? '' : 'none' }
+
+    let sortedBlogs = this.state.blogs
+      .sort((a,b) => {
+      if (a.likes !== b.likes) {
+        return b.likes - a.likes
+      }
+      return 0
+    })
 
     if (this.state.user === null) {
       return (
@@ -146,8 +201,18 @@ class App extends React.Component {
             handleSubmit={this.addBlog}
           />
         </div>
-        {this.state.blogs.map(blog =>
-          <Blog key={blog._id} blog={blog} />
+        {sortedBlogs.map(blog =>
+          <div>
+            <Blog key={blog._id} blog={blog} />
+            <Togglable 
+              buttonLabel="paljasta">
+              <p>Title: {blog.title}</p>
+              <p>Author: {blog.author}</p>
+              <p>Url: {blog.url}</p>
+              <p>Likes: {blog.likes} <button onClick={this.like(blog._id)}>like!</button></p>
+            </Togglable>
+            <button onClick={this.deleteBlog(blog._id)}>delete</button>
+          </div>
         )}
       </div>
     )
